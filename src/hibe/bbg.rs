@@ -8,16 +8,29 @@ use bls12_381_plus::{
 };
 use rand::Rng;
 
+/// HIBE from Dan Boneh, Xavier Boyen and Eu-Jin Goh (2005).
+///
+/// This struct implements the HIBE of Boneh, Boyen and Goh from their paper "Hierarchical Identity
+/// Based Encryption with Constant Size Ciphertext" (2005) ([eprint][eprint]).
+///
+/// The underlying bilinear curve is BLS12-381.
+///
+/// [eprint]: https://eprint.iacr.org/2005/015.pdf
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BonehBoyenGoh {
     max_depth: usize,
 }
 
 impl BonehBoyenGoh {
+    /// Constructs a new BBG HIBE algorithm suitable for identites up to the given depth.
+    ///
+    /// Note that this method only sets up the algorithm definition, it does not draw any keys yet.
+    /// See [`Hibe::setup`] for that.
     pub fn new(max_depth: usize) -> Self {
         Self { max_depth }
     }
 
+    /// Returns the maximum depth that this instance supports.
     pub fn max_depth(&self) -> usize {
         self.max_depth
     }
