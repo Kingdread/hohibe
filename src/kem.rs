@@ -298,7 +298,7 @@ impl<M> HybridKem<M> {
     {
         let identity = self.mapper.map_identity(identity)?;
         let Some((child, parent)) = identity.split_last() else {
-            return Err(Error::EmptyIdentity);
+            return Err(Error::DerivingRoot);
         };
         let private_key = self
             .hibe

@@ -14,8 +14,8 @@ pub enum Error {
 
     /// Error returned when trying to derive the root identity, as there is no parent key for the
     /// root.
-    #[error("The supplied identity had no elements")]
-    EmptyIdentity,
+    #[error("Cannot derive the root identity")]
+    DerivingRoot,
 
     /// Error when the given ciphertext was malformed.
     ///
