@@ -238,6 +238,29 @@ mod test {
     }
 
     #[test]
+    fn encrypt_decrypt_max_length_identity() {
+        let mut rng = rand::thread_rng();
+        let bbg = BonehBoyenGoh::new(5);
+        let (public_key, master_key) = bbg.setup(&mut rng).unwrap();
+        let identity = &[
+            Scalar::from(1u32),
+            Scalar::from(2u32),
+            Scalar::from(3u32),
+            Scalar::from(4u32),
+            Scalar::from(5u32),
+        ];
+        let secret_key = bbg
+            .generate_key(&mut rng, &public_key, &master_key, identity.as_slice())
+            .unwrap();
+        let message = Gt::generator() * Scalar::from(4u32);
+        let ciphertext = bbg
+            .encrypt(&mut rng, &public_key, identity.as_slice(), &message)
+            .unwrap();
+        let decryption = bbg.decrypt(&public_key, &secret_key, &ciphertext).unwrap();
+        assert_eq!(message, decryption);
+    }
+
+    #[test]
     fn encrypt_decrypt_derived() {
         let mut rng = rand::thread_rng();
         let bbg = BonehBoyenGoh::new(5);
@@ -298,6 +321,70 @@ mod test {
             .unwrap();
         let decryption = bbg.decrypt(&public_key, &secret_key, &ciphertext).unwrap();
         assert_ne!(message, decryption);
+    }
+
+    #[test]
+    fn derive_max_length() {
+        let mut rng = rand::thread_rng();
+        let bbg = BonehBoyenGoh::new(5);
+        let (public_key, master_key) = bbg.setup(&mut rng).unwrap();
+        let identity = &[Scalar::from(1u32), Scalar::from(2u32), Scalar::from(3u32), Scalar::from(4u32), Scalar::from(5u32)];
+        let secret_key_0 = bbg
+            .generate_key(&mut rng, &public_key, &master_key, &[])
+            .unwrap();
+        let secret_key_1 = bbg
+            .derive_key(
+                &mut rng,
+                &public_key,
+                &secret_key_0,
+                &identity[..0],
+                &identity[0],
+            )
+            .unwrap();
+        let secret_key_2 = bbg
+            .derive_key(
+                &mut rng,
+                &public_key,
+                &secret_key_1,
+                &identity[..1],
+                &identity[1],
+            )
+            .unwrap();
+        let secret_key_3 = bbg
+            .derive_key(
+                &mut rng,
+                &public_key,
+                &secret_key_2,
+                &identity[..2],
+                &identity[2],
+            )
+            .unwrap();
+        let secret_key_4 = bbg
+            .derive_key(
+                &mut rng,
+                &public_key,
+                &secret_key_3,
+                &identity[..3],
+                &identity[3],
+            )
+            .unwrap();
+        let secret_key_5 = bbg
+            .derive_key(
+                &mut rng,
+                &public_key,
+                &secret_key_4,
+                &identity[..4],
+                &identity[4],
+            )
+            .unwrap();
+        let message = Gt::generator() * Scalar::from(4u32);
+        let ciphertext = bbg
+            .encrypt(&mut rng, &public_key, identity.as_slice(), &message)
+            .unwrap();
+        let decryption = bbg
+            .decrypt(&public_key, &secret_key_5, &ciphertext)
+            .unwrap();
+        assert_eq!(message, decryption);
     }
 
     #[test]
