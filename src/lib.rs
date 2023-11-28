@@ -21,6 +21,49 @@
 //! it requires the standard library and allocations, and it unconditionally requires `serde` for
 //! serialization).
 //!
+//! # Example
+//!
+//! For this example, we assume that we are dealing with domains. The root identity is the complete
+//! domain namespace, then the TLDs follow, down to the actual domain. We set 3 to be the maximum
+//! depth, just for illustratory purposes.
+//!
+//! ```rust
+//! use hohibe::kem::HybridKem;
+//!
+//! const MAX_DEPTH: usize = 3;
+//!
+//! fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let mut rng = rand::thread_rng();
+//!     let kem = HybridKem::new(MAX_DEPTH);
+//!     let (public_key, master_secret) = kem.setup(&mut rng)?;
+//!
+//!     // Encrypt for hibe.example.com
+//!     let ciphertext = kem.encrypt(&mut rng, &public_key, &["com", "example", "hibe"], b"GET /")?;
+//!
+//!     // Assume that the owner of example.com is given the secret key for their domain ...
+//!     let example_com = kem.generate_key(
+//!         &mut rng,
+//!         &public_key,
+//!         &master_secret,
+//!         &["com", "example"],
+//!     )?;
+//!     // ... and they can use that to derive the key for the subdomain
+//!     let secret_key = kem.derive_key(
+//!         &mut rng,
+//!         &public_key,
+//!         &example_com,
+//!         &["com", "example", "hibe"],
+//!     )?;
+//!
+//!     // Now we can decrypt
+//!     let plaintext = kem.decrypt(&public_key, &secret_key, &ciphertext)?;
+//!
+//!     assert_eq!(plaintext, b"GET /");
+//!
+//!     Ok(())
+//! }
+//! ```
+//!
 //! # Crate Structure
 //!
 //! The [`hibe`] submodule contains the basic definitions of HIBE functionality, as [`hibe::Hibe`]
