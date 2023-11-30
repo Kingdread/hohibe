@@ -69,6 +69,12 @@ impl From<<BonehBoyenGoh as Hibe>::PublicKey> for PublicKey {
     }
 }
 
+impl From<PublicKey> for <BonehBoyenGoh as Hibe>::PublicKey {
+    fn from(value: PublicKey) -> Self {
+        value.0
+    }
+}
+
 impl ByteAccess for PublicKey {
     fn bytes(&self) -> Vec<u8> {
         bincode::serialize(&self.0).unwrap()
@@ -99,6 +105,12 @@ pub struct MasterKey(<BonehBoyenGoh as Hibe>::MasterKey);
 impl From<<BonehBoyenGoh as Hibe>::MasterKey> for MasterKey {
     fn from(value: <BonehBoyenGoh as Hibe>::MasterKey) -> Self {
         Self(value)
+    }
+}
+
+impl From<MasterKey> for <BonehBoyenGoh as Hibe>::MasterKey {
+    fn from(value: MasterKey) -> Self {
+        value.0
     }
 }
 
@@ -135,6 +147,12 @@ impl From<<BonehBoyenGoh as Hibe>::PrivateKey> for PrivateKey {
     }
 }
 
+impl From<PrivateKey> for <BonehBoyenGoh as Hibe>::PrivateKey {
+    fn from(value: PrivateKey) -> Self {
+        value.0
+    }
+}
+
 impl ByteAccess for PrivateKey {
     fn bytes(&self) -> Vec<u8> {
         bincode::serialize(&self.0).unwrap()
@@ -166,6 +184,12 @@ pub struct EncapsulatedKey(<BonehBoyenGoh as HibeKem>::EncapsulatedKey);
 impl From<<BonehBoyenGoh as HibeKem>::EncapsulatedKey> for EncapsulatedKey {
     fn from(value: <BonehBoyenGoh as HibeKem>::EncapsulatedKey) -> Self {
         Self(value)
+    }
+}
+
+impl From<EncapsulatedKey> for <BonehBoyenGoh as HibeKem>::EncapsulatedKey {
+    fn from(value: EncapsulatedKey) -> Self {
+        value.0
     }
 }
 
