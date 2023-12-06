@@ -20,3 +20,11 @@ rand = "0.8.5"
 serde = { version = "1.0.193", features = ["derive"] }
 sha3 = "0.10.8"
 thiserror = "1.0.50"
+
+[dev-dependencies]
+criterion = "0.5.1"
+rand_chacha = "0.3.1"
+
+[[bench]]
+name = "bbg"
+harness = false
